@@ -1,7 +1,7 @@
 ---
 title: "Why Benford's law is approximately correct for any distribution that smoothly covers several orders of magnitude"
 author: "Corey Yanofsky"
-date: "11/27/2020"
+date: "11/29/2020"
 output: html_document
 ---
 
@@ -17,7 +17,7 @@ The Wikipedia article linked above states
 
 > Benford's law is sometimes stated in a stronger form, asserting that the fractional part of the logarithm of data is typically close to uniformly distributed between 0 and 1; from this, the main claim about the distribution of first digits can be derived.
 
-Why the fractional part of the logarithm? When we take the leading digit of a number we're saying that the order of magnitude doesn't matter; 20 (whose logarithm base 10 is 1.3) is equivalent to 200 (log base 10 is 2.3) and  (log base 10 is 3.3) when it comes to the first digit.
+Why the fractional part of the logarithm? When we take the leading digit of a number we're saying that the order of magnitude doesn't matter; 20 (whose logarithm base 10 is 1.3) is equivalent to 200 (log base 10 equals 2.3) and 2,000 (log base 10 equals 3.3) when it comes to the first digit.
 
 We can basically derive the "main claim" from this stronger form of Benford's law with one graph:
 
@@ -37,5 +37,15 @@ If we take a random variable $X$ that is uniformly distributed between 0 and 1 a
 
 So the question becomes: why does the stronger form of Benford's law hold approximately for any distribution that smoothly covers several orders of magnitude? Well, it comes down to the fundamental theorem of calculus.
 
+### Yep, the good ol' fundamental theorem of calculus
 
+As discussed above, the distribution of the first digit (or of the first two digits or what have you) of a random variable $Y$ is entirely determined by the distribution of the fractional part of the random variable $X = \log_{10}Y$. The fractional part is defined as $W = X - \lfloor X\rfloor$ where $\lfloor\cdot\rfloor$ is the floor function; given a probability density $f(x)$, the density of the fractional part is
+$$ g\left(w\right) = \sum_{k=-\infty}^{\infty}f\left(k+w\right), w\in[0,1).$$
+What this equation says is that we take every interval lying between each pair of consecutive whole numbers and layer all of the density there on the interval between 0 and 1. Now, because we're limiting our attention to distributions that smoothly cover several orders of magnitude, we can approximate the density in each interval by a first order Taylor series approximation centered at the middle of each interval:
+$$g\left(w\right) = \sum_{k=-\infty}^{\infty}\left[f\left(k+\frac{1}{2}\right) + \left(w - \frac{1}{2}\right) f^{\prime}\left(k+\frac{1}{2}\right)\right], w\in[0,1).$$
+This sum of linear functions is again linear, with slope given by
+$$g^{\prime}\left(w\right) = \sum_{k=-\infty}^{\infty}f^{\prime}\left(k+\frac{1}{2}\right)\approx\int_{-\infty}^{\infty}f^{\prime}\left(x\right)\mathrm{d}x.$$
+The fundamental theorem of calculus tells us
+$$\int_{-\infty}^{\infty}f^{\prime}\left(x\right)\mathrm{d}x=\lim_{x\rightarrow+\infty}f\left(x\right) - \lim_{x\rightarrow-\infty}f\left(x\right) $$
 
+Smooth densities start at zero off at $x\rightarrow-\infty$, go up, maybe wiggle around a bit (but not too much -- smooth!) and then back down to zero at $x\rightarrow+\infty$. So to a good approximation, $g\left(w\right)$ is a linear function between 0 and 1 with slope 0 -- that is to say, it's a uniform distribution. 
