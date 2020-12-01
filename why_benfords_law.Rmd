@@ -41,11 +41,36 @@ So the question becomes: why does the stronger form of Benford's law hold approx
 
 As discussed above, the distribution of the first digit (or of the first two digits or what have you) of a random variable $Y$ is entirely determined by the distribution of the fractional part of the random variable $X = \log_{10}Y$. The fractional part is defined as $W = X - \lfloor X\rfloor$ where $\lfloor\cdot\rfloor$ is the floor function; given a probability density $f(x)$, the density of the fractional part is
 $$ g\left(w\right) = \sum_{k=-\infty}^{\infty}f\left(k+w\right), w\in[0,1).$$
-What this equation says is that we take every interval lying between each pair of consecutive whole numbers and layer all of the density there on the interval between 0 and 1. Now, because we're limiting our attention to distributions that smoothly cover several orders of magnitude, we can approximate the density in each interval by a first order Taylor series approximation centered at the middle of each interval:
+What this equation says is that we take every interval lying between each pair of consecutive whole numbers and layer all of the density there on the interval between 0 and 1. 
+
+```{r plot, echo = FALSE}
+animated_plot <- function(t) {
+  dsknorm <- function(x, loc, scale, alpha) dnorm((x-loc)/scale)*pnorm(alpha*(x-loc)/scale)*2/scale
+  loc <- 1.6
+  scale <- 2
+  alpha <- 4
+  x <- seq(0, 9, length.out = 1e5 + 1)
+  x <- x[-1]
+  f <- dsknorm(xx, loc, scale, alpha)
+  plot(x, f, yaxt = "n", ylab = "", type = "l", ylim = c(0, 1.2))
+  lines(c(0, 9), c(0,0))
+  for(i in 1:9) lines(c(i,i), c(0, dsknorm(i, loc, scale, alpha)), lty = 2)
+
+  
+}
+plot(xx, f, xlab = "x", yaxt = "n", ylab = "", type = "l", ylim = c(0, 1.2))
+lines(c(0, 9), c(0,0))
+for(i in -1:10) lines(c(i,i), c(0, dsknorm(i, loc, scale, alpha)), lty = 2)
+
+
+```
+
+
+Now, because we're limiting our attention to distributions that smoothly cover several orders of magnitude, we can approximate the density in each interval by a Taylor series truncated to first order centered at the middle of each interval:
 $$g\left(w\right) = \sum_{k=-\infty}^{\infty}\left[f\left(k+\frac{1}{2}\right) + \left(w - \frac{1}{2}\right) f^{\prime}\left(k+\frac{1}{2}\right)\right], w\in[0,1).$$
 This sum of linear functions is again linear, with slope given by
-$$g^{\prime}\left(w\right) = \sum_{k=-\infty}^{\infty}f^{\prime}\left(k+\frac{1}{2}\right)\approx\int_{-\infty}^{\infty}f^{\prime}\left(x\right)\mathrm{d}x.$$
+$$g^{\prime}\left(w\right) = \sum_{k=-\infty}^{\infty}f^{\prime}\left(k+w\right)\approx\int_{-\infty}^{\infty}f^{\prime}\left(x\right)\mathrm{d}x.$$
 The fundamental theorem of calculus tells us
-$$\int_{-\infty}^{\infty}f^{\prime}\left(x\right)\mathrm{d}x=\lim_{x\rightarrow+\infty}f\left(x\right) - \lim_{x\rightarrow-\infty}f\left(x\right) $$
+$$\int_{-\infty}^{\infty}f^{\prime}\left(x\right)\mathrm{d}x=\lim_{x\rightarrow+\infty}f\left(x\right) - \lim_{x\rightarrow-\infty}f\left(x\right).$$
 
-Smooth densities start at zero off at $x\rightarrow-\infty$, go up, maybe wiggle around a bit (but not too much -- smooth!) and then back down to zero at $x\rightarrow+\infty$. So to a good approximation, $g\left(w\right)$ is a linear function between 0 and 1 with slope 0 -- that is to say, it's a uniform distribution. 
+Basically what this says is what goes up, must come down. Smooth densities start at zero off at $x\rightarrow-\infty$, go up, maybe wiggle around a bit (but not too much) and then go back down to zero at $x\rightarrow+\infty$. So to a good approximation, $g\left(w\right)$ is a linear function between 0 and 1 with slope 0 -- that is to say, it's a uniform distribution. 
